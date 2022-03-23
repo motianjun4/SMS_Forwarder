@@ -13,7 +13,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-
 class SmsReceiver: BroadcastReceiver(){
     private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -32,16 +31,18 @@ class SmsReceiver: BroadcastReceiver(){
                 .show()
             Console.writeLine("You have one new message: ${message.messageBody}")
             scope.launch {
-                Console.writeLine("sending telegram")
-                val token = context.getString(R.string.telegram_token)
-                val chatId = context.getString(R.string.telegram_chat_id)
-                val bot = TelegramBot(token)
-                bot.execute(SendMessage(chatId,
-                    "New Message:\n${message.displayOriginatingAddress}:\n${message.messageBody}"))
+                sendTelegram(context, "New Message:\n${message.displayOriginatingAddress}:\n${message.messageBody}")
             }
         }
     }
+}
 
+fun sendTelegram(context: Context, message: String){
+    Console.writeLine("sending message to telegram")
+    val token = context.getString(R.string.telegram_token)
+    val chatId = context.getString(R.string.telegram_chat_id)
+    val bot = TelegramBot(token)
+    bot.execute(SendMessage(chatId,message))
 }
 
 

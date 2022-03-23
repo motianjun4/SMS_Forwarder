@@ -1,49 +1,54 @@
 package com.github.motianjun4.sms_forwarder
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import android.view.Menu
-import android.view.MenuItem
 import android.widget.Button
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.github.motianjun4.sms_forwarder.databinding.ActivityMainBinding
+import com.jraska.console.Console
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.security.Permissions
 
 class MainActivity : AppCompatActivity(){
-
     private lateinit var binding: ActivityMainBinding
+    private val scope = CoroutineScope(Dispatchers.IO)
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         setSupportActionBar(binding.toolbar)
 
-        val btnStart: Button = findViewById(R.id.btnStart)
-        val btnStop: Button = findViewById(R.id.btnStop)
-        btnStart.setOnClickListener {
 
-        }
-        btnStop.setOnClickListener{
-
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED){
+            Console.writeLine("RECEIVE_SMS permission needed")
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECEIVE_SMS), 1)
         }
 
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
+        val btnTest: Button = findViewById(R.id.btnTest)
+        btnTest.setOnClickListener {
+            scope.launch {
+                sendTelegram(applicationContext, "This is a test message from SMS forwarder")
+                Console.writeLine("test message sent")
+            }
         }
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if(requestCode == 1){
+            Console.writeLine("RECEIVE_SMS permission granted")
+        }
+    }
 }
