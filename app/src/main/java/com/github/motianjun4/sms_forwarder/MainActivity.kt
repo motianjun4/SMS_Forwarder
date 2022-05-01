@@ -5,7 +5,6 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.Button
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.github.motianjun4.sms_forwarder.databinding.ActivityMainBinding
@@ -13,7 +12,6 @@ import com.jraska.console.Console
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.security.Permissions
 
 class MainActivity : AppCompatActivity(){
     private lateinit var binding: ActivityMainBinding

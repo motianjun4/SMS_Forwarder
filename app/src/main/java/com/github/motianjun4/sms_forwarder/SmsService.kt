@@ -12,6 +12,7 @@ import com.pengrad.telegrambot.request.SendMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlin.text.StringBuilder
 
 class SmsReceiver: BroadcastReceiver(){
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -22,17 +23,25 @@ class SmsReceiver: BroadcastReceiver(){
             return
         }
         val smsMessages = Telephony.Sms.Intents.getMessagesFromIntent(intent)
+        if (smsMessages.isEmpty()){
+            return
+        }
+        val sender = smsMessages[0].displayOriginatingAddress
+        val textBuilder = StringBuilder()
         for (message in smsMessages) {
-            Toast.makeText(
-                context,
-                "Message from ${message.displayOriginatingAddress} : body ${message.messageBody}",
-                Toast.LENGTH_SHORT
-            )
-                .show()
-            Console.writeLine("You have one new message: ${message.messageBody}")
-            scope.launch {
-                sendTelegram(context, "New Message:\n${message.displayOriginatingAddress}:\n${message.messageBody}")
-            }
+            textBuilder.append(message.displayMessageBody)
+        }
+        val text = textBuilder.toString()
+
+        Toast.makeText(
+            context,
+            "Message from $sender: $text",
+            Toast.LENGTH_SHORT
+        )
+            .show()
+        Console.writeLine("You have one new message: $text")
+        scope.launch {
+            sendTelegram(context, "New Message:\n$sender:\n$text")
         }
     }
 }
@@ -44,6 +53,3 @@ fun sendTelegram(context: Context, message: String){
     val bot = TelegramBot(token)
     bot.execute(SendMessage(chatId,message))
 }
-
-
-

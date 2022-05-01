@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SMS_forwarder">
         <activity
-            android:name="com.github.motianjun4.sms_forwarder.MainActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.SMS_forwarder.NoActionBar">
             <intent-filter>
@@ -20,7 +20,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <receiver android:name="com.github.motianjun4.sms_forwarder.SmsReceiver"  android:exported="true" android:enabled="true"
+        <receiver android:name=".SmsReceiver"  android:exported="true" android:enabled="true"
             android:permission="android.permission.BROADCAST_SMS">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
